@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import "./Lista.module.css";
+import "./page.module.css";
 
 const CAT_CONFIG = {
     personal: { icon: "✿", label: "personal", badge: "#fce8f3", badgeText: "#b05090", pill: "#e8a0cd", pillText: "#7a1f5e", pillBorder: "#e8a0cd", pilIdle: "#fce8f3", pilIlText: "#c063a0", pillIdleBorder: "#f0c4de" },
