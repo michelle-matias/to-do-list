@@ -1,0 +1,66 @@
+/* ── Main page wrapper ── */
+.mainPage {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+}
+
+/* ── Header ── */
+.site-header {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    position: relative;
+}
+
+.site-header::after {
+    content: '';
+    display: block;
+    margin: 1.5rem auto 0;
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--pink-deep), transparent);
+    border-radius: 999px;
+}
+
+.header-deco {
+    font-size: 1.1rem;
+    letter-spacing: 0.5rem;
+    color: var(--pink-deep);
+    margin-bottom: 0.75rem;
+    animation: float 4s ease-in-out infinite;
+}
+
+.header-deco.small {
+    font-size: 0.85rem;
+    letter-spacing: 0.4rem;
+    color: var(--accent);
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+    animation-delay: 2s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-4px); }
+}
+
+.site-name {
+    font-family: var(--font-script);
+    font-size: clamp(2.8rem, 8vw, 4.5rem);
+    color: var(--rose);
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+    /* soft glow */
+    text-shadow:
+            0 0 30px #f8b8cc80,
+            0 2px 0 #fff;
+}
+
+.site-student {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    margin-top: 0.35rem;
+}
