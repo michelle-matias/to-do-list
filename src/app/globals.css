@@ -1,31 +1,32 @@
-.mainPage{
-  margin-left: 10vw;
-  margin-right: 10vw;
-  height: 90vh;
-  padding: 10px;
-  background-color: lightgray;
+/* ✿ globals.css — Michelle's little to-do lista ✿ */
+
+:root {
+  --pink-soft:    #fce4ec;
+  --pink-mid:     #f8b8cc;
+  --pink-deep:    #e57399;
+  --rose:         #c2496d;
+  --cream:        #fff8f9;
+  --text-dark:    #3d1c2e;
+  --text-mid:     #7a3a56;
+  --text-light:   #b07090;
+  --accent:       #f4a7c0;
+  --white:        #ffffff;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-script:  'Petit Formal Script', cursive;
+  --font-body:    'DM Sans', sans-serif;
 }
 
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #333333;
+html {
+  font-size: 16px;
 }
 
-ul li {
-  float: left;
-}
-
-ul li a {
-  display: block;
-  color: white;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
-
-ul li a:hover {
-  background-color: #111111;
+body {
+  background-color: var(--cream);
+  background-image:
+          radial-gradient(ellipse at 20% 10%, #fce4ec88 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 90%, #f8b8cc55 0%, transparent 50%);
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--text-dark);
 }
