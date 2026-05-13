@@ -1,4 +1,4 @@
-import "./page.module.css";
+import "./Page.module.css";
 
 export const metadata = {
     title: "my little to-do lista ✿",
