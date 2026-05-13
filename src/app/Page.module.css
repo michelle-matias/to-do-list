@@ -1,0 +1,10 @@
+
+
+.btnCust{
+  width: 200px;
+  height: 30px;
+  font-size: 16px;
+  background-color: #cccccc;
+  color: #0a0a0a;
+  border-radius: 10px;
+}
