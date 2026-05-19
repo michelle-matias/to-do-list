@@ -1,66 +1,104 @@
-/* ── Main page wrapper ── */
+/* ✿ page.css — HOME PAGE STYLING (CSS) ✿
+   This file manages the layouts and styles specific to the Landing/Home page.
+   It sets up beautiful soft animation styles, customized headers, and elegant glowing text shadows.
+*/
+
+/* ─── MAIN PAGE WRAPPER (Content alignment) ───
+   Centered area that holds the entire home page content.
+*/
 .mainPage {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 0 1.5rem 4rem;
+    max-width: 720px;          /* Restricts the width so text doesn't stretch too wide on desktop screens */
+    margin: 0 auto;            /* Centers the entire block horizontally within the browser screen */
+    padding: 0 1.5rem 4rem;    /* Padding: 0 top, 1.5rem left/right, and 4rem bottom space */
 }
 
-/* ── Header ── */
+/* ─── SITE HEADER (Cabeçalho principal) ───
+   Container wrapping Michelle's name and school details.
+*/
 .site-header {
-    text-align: center;
-    padding: 3rem 1rem 2rem;
-    position: relative;
+    text-align: center;        /* Centers all text inside the header */
+    padding: 3rem 1rem 2rem;   /* Spacing: 3rem top, 1rem left/right, 2rem bottom */
+    position: relative;        /* Enables positioning decorative sub-elements relative to this header */
 }
 
+/* ─── CUSTOM DECORATIVE UNDERLINE (Linha de Divisão Decorativa) ───
+   Creates a cute soft line under the header that fades out on both ends.
+*/
 .site-header::after {
-    content: '';
-    display: block;
-    margin: 1.5rem auto 0;
-    width: 120px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--pink-deep), transparent);
-    border-radius: 999px;
+    content: '';                                        /* Required to display an empty decorative element */
+    display: block;                                     /* Renders it as a solid block */
+    margin: 1.5rem auto 0;                              /* Margins: 1.5rem top, centers horizontally, 0 bottom */
+    width: 120px;                                       /* Cute, narrow divider width */
+    height: 2px;                                        /* 2px thickness */
+    
+    /* Creates a gradient starting transparent, transitioning into rich pink, and fading back to transparent */
+    background: linear-gradient(90deg, transparent, var(--pink-deep), transparent); 
+    
+    border-radius: 999px;                               /* Smooth rounded ends */
 }
 
+/* ─── TOP DECORATIVE FLOWERS (Decoração de Flores - Topo) ─── */
 .header-deco {
-    font-size: 1.1rem;
-    letter-spacing: 0.5rem;
-    color: var(--pink-deep);
-    margin-bottom: 0.75rem;
-    animation: float 4s ease-in-out infinite;
+    font-size: 1.1rem;                                  /* Font size of the flower icons (✿ ✾ ✿) */
+    letter-spacing: 0.5rem;                             /* Extra horizontal spacing between flowers */
+    color: var(--pink-deep);                            /* Styled using our deep pink design token */
+    margin-bottom: 0.75rem;                             /* Spacing below the flowers */
+    
+    /* Applies a custom animation named "float" taking 4 seconds, smoothing out, and looping forever */
+    animation: float 4s ease-in-out infinite; 
 }
 
+/* ─── BOTTOM DECORATIVE FLOWERS (Decoração de Flores - Fundo) ─── */
 .header-deco.small {
-    font-size: 0.85rem;
-    letter-spacing: 0.4rem;
-    color: var(--accent);
-    margin-top: 0.75rem;
-    margin-bottom: 0;
-    animation-delay: 2s;
+    font-size: 0.85rem;                                 /* Smaller text size for the bottom flowers */
+    letter-spacing: 0.4rem;                             /* Sightly smaller horizontal spacing */
+    color: var(--accent);                               /* Light pink accent color */
+    margin-top: 0.75rem;                                /* Spacing above the flowers */
+    margin-bottom: 0;                                   /* No margin on the bottom */
+    
+    /* Delays this second animation by 2 seconds so they float out of sync for a natural look! */
+    animation-delay: 2s;                                
 }
 
+/* ─── FLOATING KEYFRAME ANIMATION (Animação de Flutuar) ───
+   Defines how the decorative flowers gently move up and down over time.
+*/
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-4px); }
+    0%, 100% { transform: translateY(0); }             /* Start and end at normal position */
+    50%       { transform: translateY(-4px); }          /* In the middle (at 2s), float 4px upwards */
 }
 
+/* ─── MAIN TITLE: MICHELLE ROSE MATIAS ───
+   Large decorative display title.
+*/
 .site-name {
-    font-family: var(--font-script);
-    font-size: clamp(2.8rem, 8vw, 4.5rem);
-    color: var(--rose);
-    line-height: 1.15;
-    letter-spacing: 0.02em;
-    /* soft glow */
+    font-family: var(--font-script);                    /* Uses our beautiful Petit Formal Script handwritten font */
+    
+    /* Dynamic font size: scales smoothly between 2.8rem (mobile) and 4.5rem (desktop) depending on screen width (8vw) */
+    font-size: clamp(2.8rem, 8vw, 4.5rem); 
+    
+    color: var(--rose);                                 /* Styled using our signature cozy Rose color */
+    line-height: 1.15;                                  /* Cozy line spacing so the large font sits tightly together */
+    letter-spacing: 0.02em;                             /* Gentle extra space between characters */
+    
+    /* Cozy double-layer text shadow:
+       1st layer: A soft pink glowing aura spreading 30px out (#f8b8cc80)
+       2nd layer: A crisp white 3D layer underneath (0 2px 0 #fff) to make it readable and pop!
+    */
     text-shadow:
             0 0 30px #f8b8cc80,
             0 2px 0 #fff;
 }
 
+/* ─── STUDENT NUMBER (Número de Aluno) ───
+   Displays student id information elegantly.
+*/
 .site-student {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: 0.95rem;
-    color: var(--text-light);
-    letter-spacing: 0.08em;
-    margin-top: 0.35rem;
+    font-family: var(--font-display);                   /* Uses the elegant Playfair Display serif font */
+    font-style: italic;                                 /* Styled as beautiful cursive italics */
+    font-size: 0.95rem;                                 /* Muted readable scale */
+    color: var(--text-light);                           /* Muted pink-plum color so it sits softly in the background */
+    letter-spacing: 0.08em;                             /* Generous letter-spacing for premium magazine-style feel */
+    margin-top: 0.35rem;                                /* Generates a small margin separation from the title name */
 }
+

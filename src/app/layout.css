@@ -1,38 +1,37 @@
+/* ✿ layout.css — NAVIGATION & GLOBAL LAYOUT STYLING (CSS) ✿
+   This file manages the styling for layout-specific elements like the top navigation bar.
+*/
+
+/* ─── NAVIGATION LINK BUTTONS (Botões de Navegação) ───
+   Styling for the page links at the top-left (✦ Home and ✿ Lista).
+   We use transitions and subtle shadows to give them a premium, tactile feel.
+*/
 .nav-lista {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: #b565a7;
-    background: rgba(255,255,255,0.7);
-    border: 1.5px solid #f0c4de;
-    border-radius: 20px;
-    padding: 7px 18px;
-    text-decoration: none;
-    letter-spacing: 0.3px;
-    display: inline-block;
-    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;                 /* Clean typography matching the overall design */
+    font-size: 13px;                                    /* Cute, compact font size */
+    font-weight: 500;                                   /* Semi-bold text to make it readable */
+    color: white;                                       /* High-contrast white text color */
+    
+    /* Elegant gradient background changing from sweet pink to soft purple */
+    background: linear-gradient(135deg, #d48bbf, #b07dd4); 
+    
+    border: 1.5px solid transparent;                    /* Transparent border to maintain same sizing as other buttons */
+    border-radius: 20px;                                /* Perfectly rounded pill shape */
+    padding: 7px 18px;                                  /* Padding: 7px top/bottom and 18px left/right to look like a pill */
+    text-decoration: none;                              /* Removes the default underline on links */
+    letter-spacing: 0.3px;                              /* Tiny space between letters for a clean aesthetic */
+    display: inline-block;                              /* Allows setting width/height/padding correctly on standard <a> link elements */
+    
+    /* Smooth transition for hover effects! When hovering or leaving, the property shifts over 0.2 seconds */
+    transition: all 0.2s ease-in-out;                   
 }
+
+/* ─── NAVIGATION LINK HOVER STATE (Efeito de Passar o Rato) ───
+   Triggers when the cursor floats over a navigation pill.
+*/
 .nav-lista:hover {
-    background: #fce8f3;
-    border-color: #e8a0cd;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(180,100,200,0.2);
-}
-.nav-lista {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: white;
-    background: linear-gradient(135deg, #d48bbf, #b07dd4);
-    border: 1.5px solid transparent;
-    border-radius: 20px;
-    padding: 7px 18px;
-    text-decoration: none;
-    letter-spacing: 0.3px;
-    display: inline-block;
-    transition: all 0.2s;
-}
-.nav-lista:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(180,100,200,0.35);
-}
+    transform: translateY(-1.5px);                      /* Lifts the button slightly upwards for a responsive physical feel */
+    
+    /* Soft, colorful shadow that glows and grows when hovered, giving it a premium glassmorphic/glowing appearance */
+    box-shadow: 0 4px 12px rgba(180, 100, 200, 0.35); 
+}

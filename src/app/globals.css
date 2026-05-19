@@ -1,32 +1,50 @@
-/* ✿ globals.css — Michelle's little to-do lista ✿ */
+/* ✿ globals.css — GLOBAL STYLE SYSTEM (CSS) ✿
+   This file defines the global styling tokens (design variables) and standard styles for the entire website.
+   It sets up the colors, fonts, and the beautiful background that is shared across all pages.
+*/
 
 :root {
-  --pink-soft:    #fce4ec;
-  --pink-mid:     #f8b8cc;
-  --pink-deep:    #e57399;
-  --rose:         #c2496d;
-  --cream:        #fff8f9;
-  --text-dark:    #3d1c2e;
-  --text-mid:     #7a3a56;
-  --text-light:   #b07090;
-  --accent:       #f4a7c0;
-  --white:        #ffffff;
+  /* ─── COLOR PALETTE (Cores de Destaque e Tema) ───
+     We define these as variables so we can reuse them across any CSS file by calling var(--variable-name).
+     This makes it incredibly easy to change colors in one place and have it update everywhere!
+  */
+  --pink-soft:    #fce4ec;   /* Soft pastel pink for subtle backgrounds */
+  --pink-mid:     #f8b8cc;   /* Medium sweet pink used for borders and hover effects */
+  --pink-deep:    #e57399;   /* Rich pink for emphasis, dividers, and decoration elements */
+  --rose:         #c2496d;   /* Cozy dark rose/crimson color for main headers and brand titles */
+  --cream:        #fff8f9;   /* Warm off-white background color that feels soft on the eyes */
+  --text-dark:    #3d1c2e;   /* Deep plum-brown for high readability body text (instead of harsh solid black) */
+  --text-mid:     #7a3a56;   /* Medium plum for subtitles, labels, and secondary texts */
+  --text-light:   #b07090;   /* Light dusty pink-purple for metadata, icons, and muted details */
+  --accent:       #f4a7c0;   /* Bright accent pink for buttons and eye-catching highlights */
+  --white:        #ffffff;   /* Pure white for card panels and inputs to stand out from the cream background */
 
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-script:  'Petit Formal Script', cursive;
-  --font-body:    'DM Sans', sans-serif;
+  /* ─── TYPOGRAPHY (Tipografia / Fontes) ───
+     These define the font hierarchies used across the website.
+  */
+  --font-display: 'Playfair Display', Georgia, serif;  /* Elegant serif font for numbers and stats */
+  --font-script:  'Petit Formal Script', cursive;        /* Sweet handwritten script font for titles */
+  --font-body:    'DM Sans', sans-serif;                 /* Clean, modern sans-serif font for paragraphs, lists, and inputs */
 }
 
+/* ─── HTML ROOT STYLING ─── */
 html {
-  font-size: 16px;
+  font-size: 16px; /* Sets the default base font size, meaning 1rem is equal to 16px */
 }
 
+/* ─── BODY (O Corpo da Página) ───
+   Defines the base styles applied to the entire page canvas.
+*/
 body {
-  background-color: var(--cream);
+  background-color: var(--cream); /* Applies our soft warm-cream color as the base background */
+  
+  /* Creates a gorgeous, dreamlike gradient background with two soft pink glowing ellipses on the top-left and bottom-right */
   background-image:
           radial-gradient(ellipse at 20% 10%, #fce4ec88 0%, transparent 55%),
           radial-gradient(ellipse at 80% 90%, #f8b8cc55 0%, transparent 50%);
-  min-height: 100vh;
-  font-family: var(--font-body);
-  color: var(--text-dark);
+          
+  min-height: 100vh;                /* Forces the body to cover at least the full height of the viewport */
+  font-family: var(--font-body);    /* Applies our default clean DM Sans typography to all text */
+  color: var(--text-dark);          /* Applies the cozy dark-plum color to all standard text */
 }
+

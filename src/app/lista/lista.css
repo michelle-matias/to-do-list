@@ -1,231 +1,188 @@
+/* ✿ lista.css — TO-DO LIST LAYOUT & INTERFACE STYLING (CSS) ✿
+   This stylesheet designs the elegant, soft, pink-and-lavender theme for Michelle's To-Do List.
+   It configures flexbox grids, circular custom checkboxes, card layouts, item lists, and transition animations.
+*/
+
+/* ─── FONT IMPORTS ───
+   Imports Playfair Display (for editorial serif look) and DM Sans (for clean user-friendly readouts).
+*/
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
 
-.divInputBtn{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* ─── BASE RESET (Reset Geral de Margens) ───
+   Clears browser defaults and forces standard sizing across all elements.
+*/
+*, *::before, *::after {
+    box-sizing: border-box; /* Forces padding/borders to fit inside the element width/height */
+    margin: 0;              /* Removes default browser margins */
+    padding: 0;             /* Removes default browser paddings */
 }
 
-.displayFlex{
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-}
-
-/**
-    Código relativo ao input
- */
-.inputLista {
-    width: 100%;
-
-    padding: 0.85rem 0;
-
-    margin: 10px;
-
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-
-    background: #ffffff;
-    color: #F8C8DC;
-
-    font-size: 1rem;
-    font-weight: 500;
-
-    outline: none;
-
-    transition:
-            border-color 0.2s ease,
-            box-shadow 0.2s ease,
-            transform 0.2s ease;
-}
-
-.inputLista::placeholder {
-    color: #9ca3af;
-}
-
-.inputLista:hover {
-    border-color: #93c5fd;
-}
-
-.inputLista:focus {
-    border-color: #2563eb;
-
-    box-shadow:
-            0 0 0 4px rgba(37, 99, 235, 0.15);
-
-    transform: translateY(-1px);
-}
-
-.inputLista:disabled {
-    background: #f3f4f6;
-    color: #9ca3af;
-    cursor: not-allowed;
-}
-
-/**
-    Código relativo ao botão
- */
-
-.botaoLista {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 12px;
-
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    color: white;
-
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-
-    cursor: pointer;
-    transition:
-            transform 0.2s ease,
-            box-shadow 0.2s ease,
-            background 0.2s ease;
-
-    box-shadow:
-            0 4px 12px rgba(37, 99, 235, 0.25);
-}
-
-.botaoLista:hover {
-    transform: translateY(-2px);
-
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-
-    box-shadow:
-            0 8px 20px rgba(37, 99, 235, 0.35);
-}
-
-.botaoLista:active {
-    transform: translateY(0);
-    box-shadow:
-            0 2px 6px rgba(37, 99, 235, 0.25);
-}
-
-.botaoLista:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* CSS from lista component */
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+/* ─── ROOT BODY LAYOUT ───
+   Positions the centered card nicely on the screen with a beautiful triple-color gradient.
+*/
 body {
     font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
+    
+    /* Elegant 135-degree linear gradient transitioning from soft peach-pink to lavender and ending in pastel blue */
     background: linear-gradient(135deg, #fdf0f5 0%, #f5eefe 50%, #eef5ff 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1.25rem;
+    
+    display: flex;             /* Uses flexbox to easily center content */
+    align-items: center;       /* Centers content vertically (top-to-bottom) */
+    justify-content: center;    /* Centers content horizontally (left-to-right) */
+    padding: 2rem 1.25rem;     /* Padding around the viewport so cards don't touch mobile screen edges */
 }
 
+/* ─── KEYFRAME ANIMATIONS (Animações de Transição) ─── */
+
+/* 1. Confetti Falling Effect: Animates the tiny pastel squares falling down and spinning */
 @keyframes fall {
     0%   { transform: translateY(0) rotate(0deg);   opacity: 1; }
     100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
 }
 
+/* 2. Slide In Effect: Smoothly fades and slides new task entries upwards when added */
 @keyframes slideIn {
     from { opacity: 0; transform: translateY(-8px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-.todo-card { width: 100%; max-width: 440px; }
+/* ─── TO-DO LIST CONTAINER (O Cartão do App) ───
+   Standardizes the card width.
+*/
+.todo-card {
+    width: 100%;
+    max-width: 440px; /* Restricts maximum width to look premium and compact on large screens */
+}
 
-.header { text-align: center; margin-bottom: 1.75rem; }
+/* ─── APP HEADER (Título Principal) ─── */
+.header {
+    text-align: center;
+    margin-bottom: 1.75rem; /* Space below the header before the input box starts */
+}
 
 .header h1 {
     font-family: 'Playfair Display', serif;
     font-size: 28px;
     font-weight: 500;
-    color: #b565a7;
+    color: #b565a7;          /* Soft royal plum-pink title color */
     letter-spacing: -0.5px;
     line-height: 1.2;
 }
 
-.header h1 em { font-style: italic; color: #c97bbf; }
+.header h1 em {
+    font-style: italic;     /* Formats "my little" to be styled in elegant cursive italics */
+    color: #c97bbf;         /* Lighter pink highlight */
+}
 
 .header p {
     font-size: 12px;
-    color: #c9a0d0;
-    margin-top: 4px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+    color: #c9a0d0;         /* Soft lavender text */
+    margin-top: 4px;        /* Gap between title and subtitle */
+    letter-spacing: 1.5px;  /* Spanned letters for professional branding */
+    text-transform: uppercase; /* Converts subtitle to ALL CAPS */
 }
 
+/* ─── INPUT PANEL (Painel de Entrada de Tarefas) ───
+   Creates a beautiful translucent glassmorphic background box.
+*/
 .input-section {
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(210,170,230,0.3);
-    border-radius: 18px;
-    padding: 1.25rem;
-    margin-bottom: 1.25rem;
-    box-shadow: 0 4px 24px rgba(180,130,210,0.1);
+    background: rgba(255, 255, 255, 0.7);            /* Semi-transparent white background */
+    backdrop-filter: blur(8px);                       /* Glassmorphism blur behind the panel */
+    border: 1px solid rgba(210, 170, 230, 0.3);       /* Ultra-soft purple borders */
+    border-radius: 18px;                              /* Smooth round corners */
+    padding: 1.25rem;                                 /* Comfort space inside the panel */
+    margin-bottom: 1.25rem;                           /* Space separating input from stats and list */
+    box-shadow: 0 4px 24px rgba(180, 130, 210, 0.1);  /* Soft drop shadow with a touch of lavender tint */
 }
 
-.input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+/* ─── INPUT FIELD ROW (Linha de Texto e Botão) ─── */
+.input-row {
+    display: flex; /* Arranges the input field and add button horizontally on a single line */
+    gap: 8px;      /* Gap between the input field and the button */
+    margin-bottom: 10px; /* Space below the row, separating it from the category pills */
+}
 
+/* ─── TEXT INPUT BOX (Campo de Texto) ─── */
 .task-input {
-    flex: 1;
+    flex: 1;                                  /* Tells the input box to stretch and fill all available horizontal space */
     padding: 10px 14px;
-    border: 1.5px solid #f0d5ec;
-    border-radius: 12px;
+    border: 1.5px solid #f0d5ec;              /* Sweet pinkish-lavender border */
+    border-radius: 12px;                      /* Smooth corners matching cards */
     font-family: 'DM Sans', sans-serif;
     font-size: 14px;
-    color: #7a4f7f;
-    background: rgba(255,255,255,0.8);
-    outline: none;
-    transition: border-color 0.2s;
+    color: #7a4f7f;                           /* Deep cozy purple text */
+    background: rgba(255, 255, 255, 0.8);     /* Soft translucent white background */
+    outline: none;                            /* Removes browser's standard blue outline box */
+    transition: border-color 0.2s;            /* Smooth glow transition on focus */
 }
 
-.task-input::placeholder { color: #d4a8d4; }
-.task-input:focus { border-color: #c97bbf; }
-
-.cat-pills { display: flex; gap: 6px; flex-wrap: wrap; }
-
-.cat-pill {
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1.5px solid transparent;
-    font-size: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.18s;
-    letter-spacing: 0.3px;
+.task-input::placeholder {
+    color: #d4a8d4;                           /* Muted pink-lavender placeholder text */
 }
 
+.task-input:focus {
+    border-color: #c97bbf;                    /* Highlights border with deep pink on click/focus */
+}
+
+/* ─── ADD BUTTON (Botão de Adicionar/Salvar) ─── */
 .add-btn {
     padding: 10px 18px;
     border-radius: 12px;
-    border: none;
-    background: linear-gradient(135deg, #d48bbf, #b07dd4);
+    border: none;                             /* Removes default button border lines */
+    background: linear-gradient(135deg, #d48bbf, #b07dd4); /* Pink-lavender gradient fill */
     color: white;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
-    white-space: nowrap;
+    white-space: nowrap;                      /* Prevents the text ("add" / "save") from breaking/wrapping */
     letter-spacing: 0.3px;
 }
 
-.add-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(180,100,200,0.35); }
-.add-btn:active { transform: translateY(0); }
+.add-btn:hover {
+    transform: translateY(-1px);              /* Lifts button slightly upwards on hover */
+    box-shadow: 0 4px 12px rgba(180, 100, 200, 0.35); /* Colorful glowing aura shadow */
+}
 
-.stats-row { display: flex; gap: 8px; margin-bottom: 1rem; }
+.add-btn:active {
+    transform: translateY(0);                 /* Pushes button back down to original spot when pressed */
+}
+
+/* ─── CATEGORY BUTTONS WRAPPER (Lista de Categorias) ─── */
+.cat-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap; /* Allows pills to wrap onto the next line if the screen is narrow */
+}
+
+/* ─── CATEGORY PILL BUTTON (Pílulas Individuais de Filtro) ─── */
+.cat-pill {
+    padding: 6px 14px;
+    border-radius: 20px;                      /* Fully rounded caps */
+    border: 1.5px solid transparent;          /* Transparent base border to prevent jumping when active border shows */
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s;                    /* Smooth state switching transitions */
+    letter-spacing: 0.3px;
+}
+
+/* ─── STATISTICS PANELS (Fichas de Estatísticas) ───
+   Displays numbers of total, done, and left items in three equal columns.
+*/
+.stats-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+}
 
 .stat-chip {
-    flex: 1;
-    background: rgba(255,255,255,0.6);
-    border: 1px solid rgba(210,170,230,0.25);
+    flex: 1;                                  /* Forces all three columns to be exactly the same size */
+    background: rgba(255, 255, 255, 0.6);     /* Soft glass white back plate */
+    border: 1px solid rgba(210, 170, 230, 0.25); /* Subtle pink borders */
     border-radius: 12px;
     padding: 8px;
     text-align: center;
@@ -235,110 +192,135 @@ body {
     font-size: 20px;
     font-weight: 500;
     color: #b565a7;
-    font-family: 'Playfair Display', serif;
-    display: block;
+    font-family: 'Playfair Display', serif;   /* Serif numbers look sophisticated and clean */
+    display: block;                           /* Puts the count number on its own line */
 }
 
 .stat-l {
     font-size: 10px;
     color: #c9a0d0;
     letter-spacing: 0.8px;
-    text-transform: uppercase;
+    text-transform: uppercase;                /* Makes labels "TOTAL", "DONE", "LEFT" */
 }
 
-.todo-list { display: flex; flex-direction: column; gap: 8px; }
+/* ─── TO-DO ITEM BOXES (Lista Vertical de Afazeres) ─── */
+.todo-list {
+    display: flex;
+    flex-direction: column;                   /* Stacks the task items vertically */
+    gap: 8px;                                 /* Sets spacing distance between consecutive tasks */
+}
 
+/* ─── SINGLE TASK CARD ROW (Item Individual) ─── */
 .todo-item {
-    background: rgba(255,255,255,0.75);
-    border: 1px solid rgba(210,170,230,0.25);
+    background: rgba(255, 255, 255, 0.75);    /* Solid cozy white glass appearance */
+    border: 1px solid rgba(210, 170, 230, 0.25);
     border-radius: 14px;
     padding: 12px 14px;
-    display: flex;
-    align-items: flex-start;
+    display: flex;                            /* Aligns check button, text, badge, and delete buttons horizontally */
+    align-items: flex-start;                  /* Aligns columns to the top (important for wrapping/long text!) */
     gap: 12px;
     transition: all 0.2s;
-    animation: slideIn 0.25s ease;
-    box-shadow: 0 2px 8px rgba(180,130,210,0.06);
+    animation: slideIn 0.25s ease;            /* Triggers slideIn animation when component mounts */
+    box-shadow: 0 2px 8px rgba(180, 130, 210, 0.06);
 }
 
-.todo-item.done { opacity: 0.55; background: rgba(255,255,255,0.4); }
+/* Completed State: Dims the opacity and lightens the background of completed items */
+.todo-item.done {
+    opacity: 0.55;
+    background: rgba(255, 255, 255, 0.4);
+}
 
+/* ─── CUSTOM CIRCULAR CHECKBOX WRAPPER ───
+   Creates a larger, easier to click circular hitbox around the checkbox.
+*/
 .check-wrap {
     position: relative;
     width: 22px;
     height: 22px;
-    flex-shrink: 0;
+    flex-shrink: 0;                           /* Prevents the circle checkbox from squeezing/shrinking on long text */
     cursor: pointer;
-    margin-top: 1px;
+    margin-top: 1px;                          /* Tiny micro-alignment to center with the first line of text */
 }
 
+/* Invisible overlay element that sits on top to receive mouse click events */
 .check-wrap input {
     position: absolute;
-    opacity: 0;
+    opacity: 0;                               /* Fully transparents the native browser block checkbox */
     width: 100%;
     height: 100%;
     cursor: pointer;
-    z-index: 2;
+    z-index: 2;                               /* Positions it in front of the custom visual check circle */
     margin: 0;
 }
 
+/* Visual Custom Check Circle (O visual da bolinha) */
 .custom-check {
     width: 22px;
     height: 22px;
-    border-radius: 50%;
-    border: 2px solid #e0b0d8;
+    border-radius: 50%;                       /* Creates a perfect circle */
+    border: 2px solid #e0b0d8;                /* Sweet pink border outline */
     background: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all 0.2s;                     /* Smooth check transition */
     font-size: 11px;
-    color: white;
+    color: white;                             /* Checks are marked with a white checkmark icon */
 }
 
+/* Checked State: Fills the custom checkbox with our premium pink/lavender brand gradient */
 .custom-check.checked {
     background: linear-gradient(135deg, #d48bbf, #b07dd4);
-    border-color: transparent;
+    border-color: transparent;                /* Fades the border out when checked */
 }
 
-.todo-text { flex: 1; min-width: 0; }
+/* ─── TODO CONTENT LAYOUT (Texto e Categoria) ─── */
+.todo-text {
+    flex: 1;                                  /* Instructs this text container to stretch and fill all available central space */
+    min-width: 0;                             /* Crucial layout fix: enables proper text-wrapping inside parent flexbox containers */
+}
 
+/* Main Task Description Styling */
 .todo-text-main {
     font-size: 14px;
-    color: #5a3f6a;
+    color: #5a3f6a;                           /* Beautiful deep plum-grey color */
     font-weight: 400;
     display: block;
     transition: all 0.2s;
-    line-height: 1.4;
-    word-break: break-word;
-    overflow-wrap: break-word;
+    line-height: 1.4;                         /* Breathable height for multi-line long tasks */
+    word-break: break-word;                   /* Forces long strings with no spaces to split and wrap */
+    overflow-wrap: break-word;                /* Standardizes break-word wrapping in modern browsers */
 }
 
+/* Striking completed tasks text */
 .todo-text-main.done {
-    text-decoration: line-through;
-    color: #c0a0c8;
+    text-decoration: line-through;            /* Strikes through the task */
+    color: #c0a0c8;                           /* Lightens/greys out the color */
 }
 
+/* Category Badge Labels (Tags: Personal, School, Work, etc) */
 .cat-badge {
     font-size: 10px;
     padding: 2px 8px;
-    border-radius: 10px;
-    margin-top: 3px;
-    display: inline-block;
+    border-radius: 10px;                      /* Small rounded pill tag */
+    margin-top: 3px;                          /* Space between task description and badge */
+    display: inline-block;                    /* Limits badge sizes to wrapping text width */
     letter-spacing: 0.5px;
     font-weight: 500;
 }
 
+/* ─── ACTION BUTTONS (Botões de Ações - Editar e Apagar) ─── */
 .item-actions {
     display: flex;
     gap: 5px;
-    margin-top: -3px;
+    margin-top: -3px;                         /* Offsets vertical alignment to match checkbox top */
 }
 
+/* Base button properties for circular micro-action icons */
 .icon-btn {
     width: 28px;
     height: 28px;
-    border-radius: 8px;
+    border-radius: 8px;                       /* Smooth cute squares */
     border: 1px solid;
     background: transparent;
     display: flex;
@@ -349,12 +331,45 @@ body {
     transition: all 0.15s;
 }
 
-.icon-btn.edit { border-color: #f0c8e0; color: #c070a8; }
-.icon-btn.edit:hover { background: #fce8f3; }
-.icon-btn.del { border-color: #f0c0c0; color: #c06060; }
-.icon-btn.del:hover { background: #fee8e8; }
+/* Edit Pencil Button Colors & Hover */
+.icon-btn.edit {
+    border-color: #f0c8e0;
+    color: #c070a8;
+}
 
-.empty-state { text-align: center; padding: 2.5rem 1rem; color: #d4a8d4; }
-.empty-icon { font-size: 36px; display: block; margin-bottom: 8px; opacity: 0.5; }
-.empty-state p { font-size: 13px; font-style: italic; }
+.icon-btn.edit:hover {
+    background: #fce8f3;
+}
+
+/* Delete Cross Button Colors & Hover */
+.icon-btn.del {
+    border-color: #f0c0c0;
+    color: #c06060;
+}
+
+.icon-btn.del:hover {
+    background: #fee8e8;
+}
+
+/* ─── EMPTY STATE (Estado Vazio) ───
+   Shown beautifully when the todo array contains zero tasks.
+*/
+.empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: #d4a8d4;
+}
+
+.empty-icon {
+    font-size: 36px;
+    display: block;                           /* Puts decorative flower on its own line */
+    margin-bottom: 8px;
+    opacity: 0.5;                             /* Lightly transparent */
+}
+
+.empty-state p {
+    font-size: 13px;
+    font-style: italic;                       /* Elegant cursive styling */
+}
+
 

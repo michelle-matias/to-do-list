@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "todos",
+  "info": {
+    "singularName": "todo",
+    "pluralName": "todos",
+    "displayName": "Todo",
+    "description": "Interactive to-do list tasks"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "personal",
+        "school",
+        "work",
+        "health"
+      ],
+      "default": "personal"
+    },
+    "done": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
