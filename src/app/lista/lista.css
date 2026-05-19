@@ -254,7 +254,7 @@ body {
     border-radius: 14px;
     padding: 12px 14px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
     transition: all 0.2s;
     animation: slideIn 0.25s ease;
@@ -269,6 +269,7 @@ body {
     height: 22px;
     flex-shrink: 0;
     cursor: pointer;
+    margin-top: 1px;
 }
 
 .check-wrap input {
@@ -308,6 +309,9 @@ body {
     font-weight: 400;
     display: block;
     transition: all 0.2s;
+    line-height: 1.4;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .todo-text-main.done {
@@ -325,7 +329,11 @@ body {
     font-weight: 500;
 }
 
-.item-actions { display: flex; gap: 5px; }
+.item-actions {
+    display: flex;
+    gap: 5px;
+    margin-top: -3px;
+}
 
 .icon-btn {
     width: 28px;
