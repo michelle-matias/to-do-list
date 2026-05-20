@@ -8,85 +8,225 @@
      4. JSX HTML TEMPLATES: The structure rendered inside the `return` statement which reacts dynamically to state changes.
 */
 
-// Tells Next.js to run this file in the browser (client-side) because it uses state hook controls and actions
-"use client"; 
+"use client";
 
-// Imports the React state management hook (useState) to dynamically hold and modify browser memory
-import { useState } from "react";
-
-// Imports the dedicated stylesheet styling for our card layouts, custom inputs, and animations
+import { useEffect, useState } from "react";
 import "./lista.css";
 
-/* ─── 1. CONFIGURATION SYSTEM (Configurações Estáticas) ───
-   CAT_CONFIG maps color tokens for the category badges and pills.
-   It keeps style constants separate from the interactive code, making colors clean and modular!
-*/
 const CAT_CONFIG = {
-    personal: { 
-        icon: "✿", label: "personal", 
-        badge: "#fce8f3", badgeText: "#b05090",       /* Style when shown as a small task tag */
-        pill: "#e8a0cd", pillText: "#7a1f5e", pillBorder: "#e8a0cd", /* Style when active as a selection pill */
-        pilIdle: "#fce8f3", pilIlText: "#c063a0", pillIdleBorder: "#f0c4de" /* Style when inactive/unselected */
+    personal: {
+        icon: "✿", label: "personal",
+        badge: "#fce8f3", badgeText: "#b05090",
+        pill: "#e8a0cd", pillText: "#7a1f5e", pillBorder: "#e8a0cd",
+        pilIdle: "#fce8f3", pilIlText: "#c063a0", pillIdleBorder: "#f0c4de"
     },
-    school: { 
-        icon: "◈", label: "school",   
-        badge: "#ede8fe", badgeText: "#6040b0", 
-        pill: "#c4b0f0", pillText: "#3d1f8a", pillBorder: "#c4b0f0", 
-        pilIdle: "#ede8fe", pilIlText: "#7c5cc4", pillIdleBorder: "#d4c8f8" 
+    school: {
+        icon: "◈", label: "school",
+        badge: "#ede8fe", badgeText: "#6040b0",
+        pill: "#c4b0f0", pillText: "#3d1f8a", pillBorder: "#c4b0f0",
+        pilIdle: "#ede8fe", pilIlText: "#7c5cc4", pillIdleBorder: "#d4c8f8"
     },
-    work: { 
-        icon: "◇", label: "work",     
-        badge: "#e8f0fe", badgeText: "#3060b0", 
-        pill: "#a8c0f0", pillText: "#0d2f7a", pillBorder: "#a8c0f0", 
-        pilIdle: "#e8f0fe", pilIlText: "#4a78c8", pillIdleBorder: "#c0d4f8" 
+    work: {
+        icon: "◇", label: "work",
+        badge: "#e8f0fe", badgeText: "#3060b0",
+        pill: "#a8c0f0", pillText: "#0d2f7a", pillBorder: "#a8c0f0",
+        pilIdle: "#e8f0fe", pilIlText: "#4a78c8", pillIdleBorder: "#c0d4f8"
     },
-    health: { 
-        icon: "♡", label: "health",   
-        badge: "#e8f8ee", badgeText: "#307050", 
-        pill: "#a0d8b8", pillText: "#1a5a38", pillBorder: "#a0d8b8", 
-        pilIdle: "#e8f8ee", pilIlText: "#4a9a6c", pillIdleBorder: "#b8e8cc" 
+    health: {
+        icon: "♡", label: "health",
+        badge: "#e8f8ee", badgeText: "#307050",
+        pill: "#a0d8b8", pillText: "#1a5a38", pillBorder: "#a0d8b8",
+        pilIdle: "#e8f8ee", pilIlText: "#4a9a6c", pillIdleBorder: "#b8e8cc"
     },
 };
 
-// Colors used for the falling celebration confetti sparks!
 const CONFETTI_COLORS = ["#f4a7c3", "#b8a0e8", "#a0c8f0", "#a8d8b8", "#f4d0a0", "#e8a0b8", "#c8b0f0"];
+const STRAPI_API = "http://localhost:1337/api/todos";
+const LOCAL_STORAGE_KEY = "todo_list_local";
+const LOCAL_STORAGE_MODE = "todo_list_sync_mode";
 
-/* ─── 2. SUB-COMPONENTS (Sub-elementos React) ───
-   ConfettiPiece renders a single falling square or circle.
-   We inject inline dynamic styles for individual falling trajectories.
-*/
 function ConfettiPiece({ color, left, size, duration, delay, isRound }) {
     return (
         <div
             style={{
                 position: "fixed",
                 top: "-20px",
-                left: `${left}%`,                        /* Random horizontal starting point */
-                width: `${size}px`,                      /* Random size */
+                left: `${left}%`,
+                width: `${size}px`,
                 height: `${size}px`,
-                background: color,                       /* Colorful random color */
-                borderRadius: isRound ? "50%" : "2px",   /* Random shapes: 50% makes it a circle, 2px a tiny square */
-                animation: `fall ${duration}s ${delay}s linear forwards`, /* Triggers CSS fall animation */
-                pointerEvents: "none",                   /* Ignores clicks so user can still interact through it */
-                zIndex: 9999,                            /* Keeps confetti floating on top of all card interfaces */
+                background: color,
+                borderRadius: isRound ? "50%" : "2px",
+                animation: `fall ${duration}s ${delay}s linear forwards`,
+                pointerEvents: "none",
+                zIndex: 9999,
             }}
         />
     );
 }
 
-/* ─── 3. MAIN COMPONENT (O Componente Principal) ─── */
+function normalizeStrapiPayload(entry) {
+    const attributes = entry.attributes || entry;
+    return {
+        id: entry.id ?? entry.documentId ?? attributes.documentId ?? `${Date.now()}-${Math.random()}`,
+        text: attributes.text ?? "",
+        category: attributes.category ?? "personal",
+        done: attributes.done ?? false,
+    };
+}
+
+function parseStrapiResponse(payload) {
+    if (!payload) return [];
+    const list = Array.isArray(payload.data)
+        ? payload.data
+        : Array.isArray(payload)
+            ? payload
+            : payload.data?.data;
+    if (!Array.isArray(list)) return [];
+    return list.map(normalizeStrapiPayload);
+}
+
 export default function Lista() {
-    // ─── A. REACT STATES (Memória do Componente) ───
-    // Modifying these state functions automatically causes React to update the HTML on the user's screen.
-    const [todos, setTodos] = useState([]);         // Array of tasks: [{ id, text, category, done }]
-    const [input, setInput] = useState("");         // Holds the active text typed in the input box
-    const [category, setCategory] = useState("personal"); // Currently selected task category for new items
-    const [editId, setEditId] = useState(null);     // If active editing, holds the unique ID of the edited task
-    const [confetti, setConfetti] = useState([]);   // List of active confetti pieces on screen
+    const [localTodos, setLocalTodos] = useState([]);
+    const [remoteTodos, setRemoteTodos] = useState([]);
+    const [input, setInput] = useState("");
+    const [category, setCategory] = useState("personal");
+    const [editId, setEditId] = useState(null);
+    const [confetti, setConfetti] = useState([]);
+    const [syncMode, setSyncMode] = useState("local");
+    const [syncStatus, setSyncStatus] = useState("idle");
+    const [statusMessage, setStatusMessage] = useState("Local mode active");
+    const [offlineFallback, setOfflineFallback] = useState(false);
+    const [isMigrating, setIsMigrating] = useState(false);
 
-    // ─── B. ACTION FUNCTIONS (Lógica do Javascript) ───
+    const activeTodos = syncMode === "strapi" && !offlineFallback ? remoteTodos : localTodos;
+    const activeSetTodos = syncMode === "strapi" && !offlineFallback ? setRemoteTodos : setLocalTodos;
+    const isStrapiActive = syncMode === "strapi" && !offlineFallback;
 
-    // Spawns 28 colorful confetti pieces with random angles/sizes/speeds
+    const setSyncMessage = (status, message) => {
+        setSyncStatus(status);
+        setStatusMessage(message);
+    };
+
+    const fallbackToLocal = (message) => {
+        setSyncMode("local");
+        setOfflineFallback(true);
+        setSyncMessage("error", message);
+    };
+
+    const loadLocalStorage = () => {
+        try {
+            const storedLocal = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (storedLocal) setLocalTodos(JSON.parse(storedLocal));
+            const savedMode = window.localStorage.getItem(LOCAL_STORAGE_MODE);
+            if (savedMode === "local" || savedMode === "strapi") setSyncMode(savedMode);
+        } catch (error) {
+            console.warn("Unable to read local storage", error);
+        }
+    };
+
+    const saveLocalStorage = () => {
+        window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(localTodos));
+    };
+
+    const saveRemoteTask = async (taskData, existingId) => {
+        const url = existingId ? `${STRAPI_API}/${existingId}` : STRAPI_API;
+        const method = existingId ? "PUT" : "POST";
+        let response;
+        try {
+            response = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ data: taskData }),
+            });
+        } catch (networkErr) {
+            throw new Error(`Network error when contacting Strapi: ${networkErr.message}`);
+        }
+
+        if (!response.ok) {
+            // Try to extract body for a better error message (may be JSON or plain text)
+            let details = "";
+            try {
+                const text = await response.text();
+                // Try to parse JSON for a useful message
+                try {
+                    const json = JSON.parse(text);
+                    details = JSON.stringify(json, null, 2);
+                } catch {
+                    details = text;
+                }
+            } catch (readErr) {
+                details = `failed to read error body: ${readErr.message}`;
+            }
+            throw new Error(`Strapi responded ${response.status}: ${details}`);
+        }
+
+        const payload = await response.json().catch((e) => ({ error: `invalid json response: ${e.message}` }));
+        return normalizeStrapiPayload(payload.data ?? payload);
+    };
+
+    const removeRemoteTask = async (taskId) => {
+        let response;
+        try {
+            response = await fetch(`${STRAPI_API}/${taskId}`, { method: "DELETE" });
+        } catch (networkErr) {
+            throw new Error(`Network error when contacting Strapi: ${networkErr.message}`);
+        }
+        if (!response.ok) {
+            let details = "";
+            try {
+                const text = await response.text();
+                try {
+                    const json = JSON.parse(text);
+                    details = JSON.stringify(json, null, 2);
+                } catch {
+                    details = text;
+                }
+            } catch (readErr) {
+                details = `failed to read error body: ${readErr.message}`;
+            }
+            throw new Error(`Strapi replied ${response.status}: ${details}`);
+        }
+    };
+
+    const loadStrapiTodos = async () => {
+        setOfflineFallback(false);
+        setSyncMessage("syncing", "Connecting to Strapi...");
+
+        try {
+            const response = await fetch(`${STRAPI_API}?pagination[pageSize]=100`);
+            if (!response.ok) throw new Error(`Strapi replied ${response.status}`);
+            const payload = await response.json();
+            const todos = parseStrapiResponse(payload);
+            setRemoteTodos(todos);
+            setSyncMessage("connected", `Strapi sync active • ${todos.length} task${todos.length === 1 ? "" : "s"}`);
+        } catch (error) {
+            console.error("Strapi load failed", error);
+            fallbackToLocal("Strapi is unavailable — continuing in local mode.");
+        }
+    };
+
+    const migrateLocalToStrapi = async () => {
+        if (!localTodos.length) return;
+        setIsMigrating(true);
+        setSyncMessage("syncing", "Migrating local tasks into Strapi...");
+
+        try {
+            const uploaded = [];
+            for (const todo of localTodos) {
+                const created = await saveRemoteTask({ text: todo.text, category: todo.category, done: todo.done });
+                uploaded.push(created);
+            }
+            setRemoteTodos((prev) => [...prev, ...uploaded]);
+            setLocalTodos([]);
+            setSyncMessage("connected", "All local tasks have been migrated to Strapi.");
+        } catch (error) {
+            console.error("Migration failed", error);
+            fallbackToLocal("Migration failed — staying in local mode.");
+        } finally {
+            setIsMigrating(false);
+        }
+    };
+
     const spawnConfetti = () => {
         const pieces = Array.from({ length: 28 }, (_, i) => ({
             id: Date.now() + i,
@@ -98,81 +238,191 @@ export default function Lista() {
             isRound: Math.random() > 0.5,
         }));
         setConfetti(pieces);
-        // Automatically clears the confetti after 3 seconds to keep memory clean
-        setTimeout(() => setConfetti([]), 3000); 
+        setTimeout(() => setConfetti([]), 3000);
     };
 
-    // Adds a new task to the array, or saves changes to an existing one
-    const handleAdd = () => {
-        if (!input.trim()) return; // Exits if input is empty or just spaces
-        
+    const handleAdd = async () => {
+        if (!input.trim()) return;
+        const trimmedText = input.trim();
+
         if (editId) {
-            // Edit Mode: Finds the active task by ID and updates its description and category
-            setTodos(todos.map((t) => t.id === editId ? { ...t, text: input, category } : t));
-            setEditId(null); // Resets edit state back to normal addition mode
+            const taskUpdate = { text: trimmedText, category };
+            if (isStrapiActive) {
+                try {
+                    const updated = await saveRemoteTask(taskUpdate, editId);
+                    setRemoteTodos((prev) => prev.map((task) => (task.id === editId ? updated : task)));
+                    setStatusMessage("Edited task on Strapi.");
+                } catch (error) {
+                    console.error(error);
+                    fallbackToLocal("Could not update task on Strapi — edit preserved locally.");
+                }
+            } else {
+                setLocalTodos((prev) => prev.map((task) => (task.id === editId ? { ...task, ...taskUpdate } : task)));
+            }
+            setEditId(null);
         } else {
-            // Addition Mode: Spends a new task object and appends it to the list
-            setTodos([...todos, { id: Date.now(), text: input, category, done: false }]);
+            if (isStrapiActive) {
+                try {
+                    const created = await saveRemoteTask({ text: trimmedText, category, done: false });
+                    setRemoteTodos((prev) => [...prev, created]);
+                    setStatusMessage("New task saved in Strapi.");
+                } catch (error) {
+                    console.error(error);
+                    fallbackToLocal("Unable to save to Strapi — task saved locally.");
+                    setLocalTodos((prev) => [...prev, { id: Date.now(), text: trimmedText, category, done: false }]);
+                }
+            } else {
+                setLocalTodos((prev) => [...prev, { id: Date.now(), text: trimmedText, category, done: false }]);
+            }
         }
-        setInput(""); // Clears input box text after successfully saving
+
+        setInput("");
     };
 
-    // Submits the input when the "Enter" key is hit
     const handleKeyDown = (e) => {
         if (e.key === "Enter") handleAdd();
     };
 
-    // Toggles a task completion state (checked/unchecked) and triggers confetti celebration
-    const toggleDone = (id) => {
-        const todo = todos.find((t) => t.id === id);
-        // If checking a task as completed (transitioning false -> true), spawn confetti!
-        if (todo && !todo.done) spawnConfetti(); 
-        
-        setTodos(todos.map((t) => t.id === id ? { ...t, done: !t.done } : t));
+    const toggleDone = async (id) => {
+        const todo = activeTodos.find((task) => task.id === id);
+        if (!todo) return;
+        const updatedData = { done: !todo.done };
+
+        if (isStrapiActive) {
+            try {
+                const updated = await saveRemoteTask(updatedData, id);
+                setRemoteTodos((prev) => prev.map((task) => (task.id === id ? { ...task, done: updated.done } : task)));
+                if (!todo.done) spawnConfetti();
+                setStatusMessage("Task status synced with Strapi.");
+            } catch (error) {
+                console.error(error);
+                fallbackToLocal("Unable to update Strapi — falling back to local mode.");
+            }
+        } else {
+            if (!todo.done) spawnConfetti();
+            activeSetTodos((prev) => prev.map((task) => (task.id === id ? { ...task, done: !task.done } : task)));
+        }
     };
 
-    // Populates the input boxes with selected task values to enter Editing Mode
     const editTodo = (todo) => {
         setInput(todo.text);
         setCategory(todo.category);
         setEditId(todo.id);
     };
 
-    // Deletes selected task by filtering it out of the array
-    const deleteTodo = (id) => setTodos(todos.filter((t) => t.id !== id));
+    const deleteTodo = async (id) => {
+        if (isStrapiActive) {
+            try {
+                await removeRemoteTask(id);
+                setRemoteTodos((prev) => prev.filter((task) => task.id !== id));
+                setStatusMessage("Task deleted from Strapi.");
+                return;
+            } catch (error) {
+                console.error(error);
+                fallbackToLocal("Unable to delete from Strapi — using local mode.");
+            }
+        }
+        activeSetTodos((prev) => prev.filter((task) => task.id !== id));
+    };
 
-    // ─── C. METRICS & COUNTERS ───
-    const done = todos.filter((t) => t.done).length; // Calculates number of completed tasks
+    const doneCount = activeTodos.filter((t) => t.done).length;
+    const statusLabel = syncStatus === "connected"
+        ? "connected"
+        : syncStatus === "syncing"
+            ? "connecting"
+            : syncStatus === "error"
+                ? "offline"
+                : "idle";
+    const showMigrationPanel = syncMode === "strapi" && !offlineFallback && localTodos.length > 0;
 
-    // ─── D. HTML / JSX TEMPLATE VIEW (Visualização de Layout) ───
+    useEffect(() => {
+        loadLocalStorage();
+    }, []);
+
+    useEffect(() => {
+        saveLocalStorage();
+    }, [localTodos]);
+
+    useEffect(() => {
+        window.localStorage.setItem(LOCAL_STORAGE_MODE, syncMode);
+    }, [syncMode]);
+
+    useEffect(() => {
+        if (syncMode === "strapi") {
+            loadStrapiTodos();
+        } else if (!offlineFallback) {
+            setSyncMessage("idle", "Local mode active");
+        }
+    }, [syncMode, offlineFallback]);
+
+    const handleModeChange = (mode) => {
+        setSyncMode(mode);
+        setOfflineFallback(false);
+        if (mode === "local") {
+            setSyncMessage("idle", "Local mode active");
+        }
+    };
+
     return (
         <>
-            {/* HTML: Loops and renders active confetti pieces */}
             {confetti.map((p) => (
                 <ConfettiPiece key={p.id} {...p} />
             ))}
 
-            {/* HTML: Main card structure */}
             <div className="todo-card">
-                {/* HTML: Card Title Header */}
                 <div className="header">
                     <h1><em>my little</em> to-do list ✿</h1>
                     <p>✦ stay soft, stay organised ✦</p>
                 </div>
 
-                {/* HTML: Task Input Panel */}
+                <div className="sync-card">
+                    <div className="sync-row">
+                        <div>
+                            <div className="sync-title">Sync mode</div>
+                            <div className="sync-tip sync-small">Choose Local to keep tasks in your browser, or Strapi to sync with the backend.</div>
+                        </div>
+                        <span className={`status-pill status-${statusLabel}`}>{statusLabel}</span>
+                    </div>
+
+                    <div className="mode-switch">
+                        <button className={`mode-btn ${syncMode === "local" ? "active" : ""}`} onClick={() => handleModeChange("local")}>Local</button>
+                        <button className={`mode-btn ${syncMode === "strapi" ? "active" : ""}`} onClick={() => handleModeChange("strapi")}>Strapi</button>
+                    </div>
+
+                    <p className="sync-tip">{statusMessage}</p>
+                    <p className="sync-tip">{syncMode === "strapi"
+                        ? "Run `npm run dev` inside my-strapi-project to keep your tasks synced with Strapi."
+                        : "Your tasks are stored in the browser until Strapi Sync is enabled."}
+                    </p>
+                </div>
+
+                {syncMode === "strapi" && offlineFallback && (
+                    <div className="alert-panel">
+                        <strong>Strapi is unavailable.</strong> The app has fallen back to local mode so you can keep working.
+                    </div>
+                )}
+
+                {showMigrationPanel && (
+                    <div className="migration-panel">
+                        <div className="migration-text">
+                            Found {localTodos.length} local task{localTodos.length === 1 ? "" : "s"}. Migrate them into Strapi so nothing is lost.
+                        </div>
+                        <button className="migration-btn" onClick={migrateLocalToStrapi} disabled={isMigrating}>
+                            {isMigrating ? "Migrating..." : "Migrate Tasks ✿"}
+                        </button>
+                    </div>
+                )}
+
                 <div className="input-section">
                     <div className="input-row">
-                        {/* HTML: Text input box linking text state and key triggers */}
                         <input
                             className="task-input"
                             type="text"
                             placeholder="add something sweet..."
                             value={input}
-                            onChange={(e) => setInput(e.target.value)} // Updates state variable dynamically as you type!
+                            onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
                         />
-                        {/* HTML: Add/Save Action button changing colors dynamically in Edit Mode */}
                         <button
                             className="add-btn"
                             onClick={handleAdd}
@@ -182,10 +432,9 @@ export default function Lista() {
                         </button>
                     </div>
 
-                    {/* HTML: Category pill selection filter list */}
                     <div className="cat-pills">
                         {Object.entries(CAT_CONFIG).map(([key, cfg]) => {
-                            const active = category === key; // Checks if this pill is currently selected
+                            const active = category === key;
                             return (
                                 <button
                                     key={key}
@@ -204,39 +453,34 @@ export default function Lista() {
                     </div>
                 </div>
 
-                {/* HTML: Progress Statistics Chips (Only visible if list contains tasks) */}
-                {todos.length > 0 && (
+                {activeTodos.length > 0 && (
                     <div className="stats-row">
                         <div className="stat-chip">
-                            <span className="stat-n">{todos.length}</span>
+                            <span className="stat-n">{activeTodos.length}</span>
                             <span className="stat-l">total</span>
                         </div>
                         <div className="stat-chip">
-                            <span className="stat-n">{done}</span>
+                            <span className="stat-n">{doneCount}</span>
                             <span className="stat-l">done</span>
                         </div>
                         <div className="stat-chip">
-                            <span className="stat-n">{todos.length - done}</span>
+                            <span className="stat-n">{activeTodos.length - doneCount}</span>
                             <span className="stat-l">left</span>
                         </div>
                     </div>
                 )}
 
-                {/* HTML: Tasks List rendering */}
                 <div className="todo-list">
-                    {todos.length === 0 ? (
-                        /* HTML: If list is empty, render lovely Empty State view */
+                    {activeTodos.length === 0 ? (
                         <div className="empty-state">
                             <span className="empty-icon">✿</span>
                             <p>your list is empty — add something lovely!</p>
                         </div>
                     ) : (
-                        /* HTML: Loops and renders every single task item from todos array */
-                        todos.map((todo) => {
-                            const cfg = CAT_CONFIG[todo.category]; // Grabs category visual style config
+                        activeTodos.map((todo) => {
+                            const cfg = CAT_CONFIG[todo.category] || CAT_CONFIG.personal;
                             return (
                                 <div key={todo.id} className={`todo-item${todo.done ? " done" : ""}`}>
-                                    {/* HTML: Circular Checkbox wrapping standard hidden checkbox */}
                                     <label className="check-wrap">
                                         <input
                                             type="checkbox"
@@ -248,20 +492,15 @@ export default function Lista() {
                                         </div>
                                     </label>
 
-                                    {/* HTML: Task content (Title & Category Badge tag) */}
                                     <div className="todo-text">
                                         <span className={`todo-text-main${todo.done ? " done" : ""}`}>
                                             {todo.text}
                                         </span>
-                                        <span
-                                            className="cat-badge"
-                                            style={{ background: cfg.badge, color: cfg.badgeText }}
-                                        >
+                                        <span className="cat-badge" style={{ background: cfg.badge, color: cfg.badgeText }}>
                                             {cfg.icon} {cfg.label}
                                         </span>
                                     </div>
 
-                                    {/* HTML: Actions (Pencil for Edit and Cross for Delete) */}
                                     <div className="item-actions">
                                         <button className="icon-btn edit" onClick={() => editTodo(todo)} aria-label="edit task">✎</button>
                                         <button className="icon-btn del" onClick={() => deleteTodo(todo.id)} aria-label="delete task">✕</button>
@@ -274,4 +513,4 @@ export default function Lista() {
             </div>
         </>
     );
-}
+}

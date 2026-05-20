@@ -43,3 +43,20 @@ next-env.d.ts
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/tesp-mac-web.iml
 /.idea/vcs.xml
+
+# Strapi & backend artifacts
+/my-strapi-project/.cache/
+/my-strapi-project/build/
+/my-strapi-project/dist/
+/my-strapi-project/.tmp/
+/my-strapi-project/.cache-loader/
+/my-strapi-project/.cache
+/my-strapi-project/.env
+/my-strapi-project/.env.*
+/my-strapi-project/public/uploads/
+/my-strapi-project/node_modules/
+
+# Logs
+.log
+.tmp
+.temp
