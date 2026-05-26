@@ -1,13 +1,3 @@
-/* ✿ page.js — INTERACTIVE TO-DO LIST (React / JavaScript Logic & HTML) ✿
-   This is the main engine of your interactive task manager!
-   
-   In modern React, we build interactive user interfaces using:
-     1. CLIENT-SIDE directive ("use client"): Enables React state in the browser.
-     2. JAVASCRIPT STATE CONTROLS: Manages the application memory (tasks list, input typing, active categories).
-     3. EVENT HANDLERS: Actions triggered by clicking buttons, checking boxes, or typing.
-     4. JSX HTML TEMPLATES: The structure rendered inside the `return` statement which reacts dynamically to state changes.
-*/
-
 "use client";
 
 import { useEffect, useState } from "react";
