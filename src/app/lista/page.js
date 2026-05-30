@@ -2,33 +2,8 @@
 
 import { useEffect, useState } from "react";
 import "./lista.css";
-
-const CAT_CONFIG = {
-    personal: {
-        icon: "✿", label: "personal",
-        badge: "#fce8f3", badgeText: "#b05090",
-        pill: "#e8a0cd", pillText: "#7a1f5e", pillBorder: "#e8a0cd",
-        pilIdle: "#fce8f3", pilIlText: "#c063a0", pillIdleBorder: "#f0c4de"
-    },
-    school: {
-        icon: "◈", label: "school",
-        badge: "#ede8fe", badgeText: "#6040b0",
-        pill: "#c4b0f0", pillText: "#3d1f8a", pillBorder: "#c4b0f0",
-        pilIdle: "#ede8fe", pilIlText: "#7c5cc4", pillIdleBorder: "#d4c8f8"
-    },
-    work: {
-        icon: "◇", label: "work",
-        badge: "#e8f0fe", badgeText: "#3060b0",
-        pill: "#a8c0f0", pillText: "#0d2f7a", pillBorder: "#a8c0f0",
-        pilIdle: "#e8f0fe", pilIlText: "#4a78c8", pillIdleBorder: "#c0d4f8"
-    },
-    health: {
-        icon: "♡", label: "health",
-        badge: "#e8f8ee", badgeText: "#307050",
-        pill: "#a0d8b8", pillText: "#1a5a38", pillBorder: "#a0d8b8",
-        pilIdle: "#e8f8ee", pilIlText: "#4a9a6c", pillIdleBorder: "#b8e8cc"
-    },
-};
+import AddToTaskListComponent from "./components/AddToTaskListComponent";
+import TodoItemComponent from "./components/TodoItemComponent";
 
 const CONFETTI_COLORS = ["#f4a7c3", "#b8a0e8", "#a0c8f0", "#a8d8b8", "#f4d0a0", "#e8a0b8", "#c8b0f0"];
 const STRAPI_API = "http://localhost:1337/api/todos";
@@ -57,7 +32,7 @@ function ConfettiPiece({ color, left, size, duration, delay, isRound }) {
 function normalizeStrapiPayload(entry) {
     const attributes = entry.attributes || entry;
     return {
-        id: entry.id ?? entry.documentId ?? attributes.documentId ?? `${Date.now()}-${Math.random()}`,
+        id: entry.documentId ?? attributes.documentId ?? entry.id ?? `${Date.now()}-${Math.random()}`,
         text: attributes.text ?? "",
         category: attributes.category ?? "personal",
         done: attributes.done ?? false,
@@ -133,11 +108,9 @@ export default function Lista() {
         }
 
         if (!response.ok) {
-            // Try to extract body for a better error message (may be JSON or plain text)
             let details = "";
             try {
                 const text = await response.text();
-                // Try to parse JSON for a useful message
                 try {
                     const json = JSON.parse(text);
                     details = JSON.stringify(json, null, 2);
@@ -269,18 +242,16 @@ export default function Lista() {
         setInput("");
     };
 
-    const handleKeyDown = (e) => {
-        if (e.key === "Enter") handleAdd();
-    };
-
     const toggleDone = async (id) => {
         const todo = activeTodos.find((task) => task.id === id);
         if (!todo) return;
-        const updatedData = { done: !todo.done };
 
         if (isStrapiActive) {
             try {
-                const updated = await saveRemoteTask(updatedData, id);
+                const updated = await saveRemoteTask(
+                    { text: todo.text, category: todo.category, done: !todo.done },
+                    id
+                );
                 setRemoteTodos((prev) => prev.map((task) => (task.id === id ? { ...task, done: updated.done } : task)));
                 if (!todo.done) spawnConfetti();
                 setStatusMessage("Task status synced with Strapi.");
@@ -381,7 +352,7 @@ export default function Lista() {
 
                     <p className="sync-tip">{statusMessage}</p>
                     <p className="sync-tip">{syncMode === "strapi"
-                        ? "Run `npm run dev` inside my-strapi-project to keep your tasks synced with Strapi."
+                        ? "Run `npm run develop` inside my-strapi-project to keep your tasks synced with Strapi."
                         : "Your tasks are stored in the browser until Strapi Sync is enabled."}
                     </p>
                 </div>
@@ -403,45 +374,14 @@ export default function Lista() {
                     </div>
                 )}
 
-                <div className="input-section">
-                    <div className="input-row">
-                        <input
-                            className="task-input"
-                            type="text"
-                            placeholder="add something sweet..."
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                        />
-                        <button
-                            className="add-btn"
-                            onClick={handleAdd}
-                            style={editId ? { background: "linear-gradient(135deg, #f0a8c0, #d48bbf)" } : {}}
-                        >
-                            {editId ? "save" : "add"}
-                        </button>
-                    </div>
-
-                    <div className="cat-pills">
-                        {Object.entries(CAT_CONFIG).map(([key, cfg]) => {
-                            const active = category === key;
-                            return (
-                                <button
-                                    key={key}
-                                    className="cat-pill"
-                                    onClick={() => setCategory(key)}
-                                    style={{
-                                        background: active ? cfg.pill : cfg.pilIdle,
-                                        color: active ? cfg.pillText : cfg.pilIlText,
-                                        borderColor: active ? cfg.pillBorder : cfg.pillIdleBorder,
-                                    }}
-                                >
-                                    {cfg.icon} {cfg.label}
-                                </button>
-                            );
-                        })}
-                    </div>
-                </div>
+                <AddToTaskListComponent
+                    input={input}
+                    setInput={setInput}
+                    category={category}
+                    setCategory={setCategory}
+                    editId={editId}
+                    onAdd={handleAdd}
+                />
 
                 {activeTodos.length > 0 && (
                     <div className="stats-row">
@@ -467,37 +407,15 @@ export default function Lista() {
                             <p>your list is empty — add something lovely!</p>
                         </div>
                     ) : (
-                        activeTodos.map((todo) => {
-                            const cfg = CAT_CONFIG[todo.category] || CAT_CONFIG.personal;
-                            return (
-                                <div key={todo.id} className={`todo-item${todo.done ? " done" : ""}`}>
-                                    <label className="check-wrap">
-                                        <input
-                                            type="checkbox"
-                                            checked={todo.done}
-                                            onChange={() => toggleDone(todo.id)}
-                                        />
-                                        <div className={`custom-check${todo.done ? " checked" : ""}`}>
-                                            {todo.done && "✓"}
-                                        </div>
-                                    </label>
-
-                                    <div className="todo-text">
-                                        <span className={`todo-text-main${todo.done ? " done" : ""}`}>
-                                            {todo.text}
-                                        </span>
-                                        <span className="cat-badge" style={{ background: cfg.badge, color: cfg.badgeText }}>
-                                            {cfg.icon} {cfg.label}
-                                        </span>
-                                    </div>
-
-                                    <div className="item-actions">
-                                        <button className="icon-btn edit" onClick={() => editTodo(todo)} aria-label="edit task">✎</button>
-                                        <button className="icon-btn del" onClick={() => deleteTodo(todo.id)} aria-label="delete task">✕</button>
-                                    </div>
-                                </div>
-                            );
-                        })
+                        activeTodos.map((todo) => (
+                            <TodoItemComponent
+                                key={todo.id}
+                                todo={todo}
+                                onToggle={toggleDone}
+                                onEdit={editTodo}
+                                onDelete={deleteTodo}
+                            />
+                        ))
                     )}
                 </div>
             </div>
