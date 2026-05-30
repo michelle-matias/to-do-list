@@ -309,6 +309,17 @@ body {
     font-weight: 500;
 }
 
+/* Creation / last-edited timestamps under the task text */
+.todo-meta {
+    margin-top: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 10px;
+    color: #a890b5;
+    letter-spacing: 0.3px;
+}
+
 /* ─── ACTION BUTTONS (Botões de Ações - Editar e Apagar) ─── */
 .item-actions {
     display: flex;

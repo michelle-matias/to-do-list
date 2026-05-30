@@ -36,6 +36,8 @@ function normalizeStrapiPayload(entry) {
         text: attributes.text ?? "",
         category: attributes.category ?? "personal",
         done: attributes.done ?? false,
+        createdAt: attributes.createdAt ?? null,
+        updatedAt: attributes.updatedAt ?? null,
     };
 }
 
@@ -220,7 +222,8 @@ export default function Lista() {
                     fallbackToLocal("Could not update task on Strapi — edit preserved locally.");
                 }
             } else {
-                setLocalTodos((prev) => prev.map((task) => (task.id === editId ? { ...task, ...taskUpdate } : task)));
+                const now = new Date().toISOString();
+                setLocalTodos((prev) => prev.map((task) => (task.id === editId ? { ...task, ...taskUpdate, updatedAt: now } : task)));
             }
             setEditId(null);
         } else {
@@ -232,10 +235,12 @@ export default function Lista() {
                 } catch (error) {
                     console.error(error);
                     fallbackToLocal("Unable to save to Strapi — task saved locally.");
-                    setLocalTodos((prev) => [...prev, { id: Date.now(), text: trimmedText, category, done: false }]);
+                    const now = new Date().toISOString();
+                    setLocalTodos((prev) => [...prev, { id: Date.now(), text: trimmedText, category, done: false, createdAt: now, updatedAt: now }]);
                 }
             } else {
-                setLocalTodos((prev) => [...prev, { id: Date.now(), text: trimmedText, category, done: false }]);
+                const now = new Date().toISOString();
+                setLocalTodos((prev) => [...prev, { id: Date.now(), text: trimmedText, category, done: false, createdAt: now, updatedAt: now }]);
             }
         }
 
@@ -261,7 +266,8 @@ export default function Lista() {
             }
         } else {
             if (!todo.done) spawnConfetti();
-            activeSetTodos((prev) => prev.map((task) => (task.id === id ? { ...task, done: !task.done } : task)));
+            const now = new Date().toISOString();
+            activeSetTodos((prev) => prev.map((task) => (task.id === id ? { ...task, done: !task.done, updatedAt: now } : task)));
         }
     };
 
